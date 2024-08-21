@@ -1,3 +1,10 @@
+import json
+
+class JSONFileError(Exception):
+    #A custom exception for specific errors in my application.
+    def __init__(self, message):
+        super().__init__(message)
+
 
 class Enigma:
     def __init__(self, hash_map, wheels, reflector_map):
@@ -54,4 +61,13 @@ def find_key_by_value(dictionary, target_value):
     return None
 
 def load_enigma_from_path(path):
-    pass
+    try:
+        with open(path, 'r') as input_file:
+            input_dictionary = json.load(input_file)
+            hash_map = input_dictionary['hash_map']
+            reflector_map = input_dictionary['reflector_map']
+            wheels = input_dictionary['wheels']
+            return Enigma(hash_map, wheels, reflector_map)
+    except Exception as e:
+        raise JSONFileError("The enigma script has encountered an error")
+
