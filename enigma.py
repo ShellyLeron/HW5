@@ -6,8 +6,52 @@ class Enigma:
             self.wheels = tuple(wheels)
 
     def encrypt(self, message):
-        pass
+        result = ""
+        encryption_count = 0
+        w1, w2, w3 = self.wheels
+        for char in message:
+            if char.isalpha() and char.islower():
+                encrypted_char = self.calculate_encryption(char,w1, w2, w3)
+                encryption_count+=1
+            else:
+                result += char
+            w1, w2, w3 = self.promote_wheels( w1, w2, w3,encryption_count )
+        return result
 
+    def calculate_wheels_factor(self, w1, w2, w3):
+        return ((2*w1) - w2 + w3 ) % 26
+
+    def promote_wheels(self, w1, w2, w3, encrypted_chars):
+        w1 = (w1 + 1) % 9
+        w2 = w2*2 if encrypted_chars % 2 == 0 else w2 -1
+        w3 = 10 if encrypted_chars % 10 == 0 else 5 if encrypted_chars % 3 == 0 else 0
+
+        return w1, w2, w3
+
+    def calculate_encryption(self,char, w1, w2, w3):
+        i = self.hash_map[char]
+        wheel_factor = self.calculate_wheels_factor(w1, w2, w3)
+        if wheel_factor != 0:
+            i += wheel_factor
+        else:
+            i += 1
+        i = i % 26
+        c1 = find_key_by_value(self.hash_map,i)
+        c2 = self.reflector_map[c1]
+        i = self.hash_map[c2]
+        if wheel_factor != 0:
+            i -= wheel_factor
+        else:
+            i -=1
+        i = i%26
+        c3 = find_key_by_value(self.hash_map, i)
+        return c3
+
+def find_key_by_value(dictionary, target_value):
+    for key, value in dictionary.items():
+        if value == target_value:
+            return key
+    return None
 
 def load_enigma_from_path(path):
     pass
