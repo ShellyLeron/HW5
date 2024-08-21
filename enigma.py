@@ -115,9 +115,9 @@ if __name__ == "__main__":
                 i += 1
             i += 1
 
-        if not parsed_args[CONFIG_FLAG] or not parsed_args[INPUT_FLAG]:
+        if not CONFIG_FLAG in parsed_args or not INPUT_FLAG in parsed_args:
+            print(USAGE_MESSAGE, file=sys.stderr)
             exit(1)
-            print(USAGE_MESSAGE, file = sys.stderr)
 
         enigma = load_enigma_from_path(parsed_args[CONFIG_FLAG])
 
@@ -128,12 +128,12 @@ if __name__ == "__main__":
                 result += encrypted_message
 
 
-        if parsed_args[OUTPUT_FLAG]:
+        if OUTPUT_FLAG in parsed_args:
             with open(parsed_args[OUTPUT_FLAG], WRITE_MODE) as output_file:
                 output_file.write(result)
         else:
             print(result)
 
     except Exception:
-        exit(1)
         print(ERROR_MSG)
+        exit(1)
